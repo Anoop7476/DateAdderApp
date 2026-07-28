@@ -41,11 +41,10 @@ public class DateAddRequestValidatorTests
     [Theory]
     [InlineData(-1)]
     [InlineData(-100)]
-    public void Validate_NegativeDays_ReturnsInvalid(int days)
+    public void Validate_NegativeDays_ReturnsValid(int days)
     {
         var result = _sut.Validate(new DateAddRequest("01/01/2026", days));
-        Assert.False(result.IsValid);
-        Assert.Contains("positive", result.ErrorMessage, StringComparison.OrdinalIgnoreCase);
+        Assert.True(result.IsValid);
     }
 
     [Fact]

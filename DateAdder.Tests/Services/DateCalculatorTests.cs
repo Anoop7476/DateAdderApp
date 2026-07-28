@@ -36,6 +36,10 @@ public class DateCalculatorTests
     [InlineData(15, 6, 2023, 0, 15, 6, 2023)]   // add zero days
     [InlineData(1, 1, 2023, 365, 1, 1, 2024)]   // full year (non-leap)
     [InlineData(1, 1, 2024, 366, 1, 1, 2025)]   // full leap year
+    [InlineData(12, 12, 2026, -1, 11, 12, 2026)] // subtract one day
+    [InlineData(1, 3, 2023, -1, 28, 2, 2023)]    // subtract into non-leap Feb
+    [InlineData(1, 3, 2024, -1, 29, 2, 2024)]    // subtract into leap Feb
+    [InlineData(1, 1, 2026, -1, 31, 12, 2025)]   // subtract across year boundary
     public void AddDays_ProducesCorrectDate(
         int startDay, int startMonth, int startYear, int days,
         int expectedDay, int expectedMonth, int expectedYear)
