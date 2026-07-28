@@ -1,0 +1,1 @@
+﻿namespace DateAdderApp.Interfaces; public interface IDateCalculator { bool IsLeapYear(int year); int DaysInMonth(int month, int year); void AddDays(ref int day, ref int month, ref int year, int daysToAdd); }

@@ -1,0 +1,259 @@
+﻿@page
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Date Adder</title>
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f0f2f5;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            color: #1a1a2e;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 440px;
+        }
+
+        h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 1.75rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #555;
+            margin-bottom: 0.4rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.65rem 0.9rem;
+            border: 1.5px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+            input:focus {
+                border-color: #4f46e5;
+                box-shadow: 0 0 0 3px rgba(79,70,229,0.15);
+            }
+
+            input.error {
+                border-color: #ef4444;
+                box-shadow: 0 0 0 3px rgba(239,68,68,0.12);
+            }
+
+        .field {
+            margin-bottom: 1.25rem;
+        }
+
+        .hint {
+            font-size: 0.74rem;
+            color: #9ca3af;
+            margin-top: 0.3rem;
+        }
+
+        .err {
+            font-size: 0.78rem;
+            color: #ef4444;
+            margin-top: 0.3rem;
+            min-height: 1.1em;
+        }
+
+        button {
+            width: 100%;
+            padding: 0.75rem;
+            background: #4f46e5;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: background 0.15s, transform 0.1s;
+        }
+
+            button:hover {
+                background: #4338ca;
+            }
+
+            button:active {
+                transform: scale(0.98);
+            }
+
+            button:disabled {
+                background: #a5b4fc;
+                cursor: not-allowed;
+            }
+
+        .result {
+            margin-top: 1.5rem;
+            padding: 1.1rem 1.2rem;
+            background: #f5f3ff;
+            border-left: 4px solid #4f46e5;
+            border-radius: 6px;
+            display: none;
+        }
+
+            .result.visible {
+                display: block;
+            }
+
+        .result-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #6d6aad;
+            margin-bottom: 0.3rem;
+        }
+
+        .result-date {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #3730a3;
+        }
+
+        .result-meta {
+            font-size: 0.8rem;
+            color: #6d6aad;
+            margin-top: 0.4rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Date Adder</h1>
+
+        <div class="field">
+            <label for="startDate">Start date</label>
+            <input id="startDate" type="text" placeholder="dd/mm/yyyy" maxlength="10" autocomplete="off">
+            <div class="hint">Format: dd/mm/yyyy</div>
+            <div class="err" id="dateErr"></div>
+        </div>
+
+        <div class="field">
+            <label for="days">Days to add</label>
+            <input id="days" type="number" placeholder="e.g. 30">
+            <div class="err" id="daysErr"></div>
+        </div>
+
+        <button id="calcBtn" onclick="calculate()">Calculate New Date</button>
+
+        <div class="result" id="result">
+            <div class="result-label">New Date</div>
+            <div class="result-date" id="resultDate"></div>
+            <div class="result-meta" id="resultMeta"></div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('startDate').addEventListener('input', function() {
+            let v = this.value.replace(/\D/g, '');
+            if (v.length > 2) v = v.slice(0, 2) + '/' + v.slice(2);
+            if (v.length > 5) v = v.slice(0, 5) + '/' + v.slice(5);
+            this.value = v.slice(0, 10);
+        });
+
+        document.addEventListener('keydown', e => { if (e.key === 'Enter') calculate(); });
+
+        async function calculate() {
+            const dateInput = document.getElementById('startDate');
+            const daysInput = document.getElementById('days');
+            const dateErr = document.getElementById('dateErr');
+            const daysErr = document.getElementById('daysErr');
+            const result = document.getElementById('result');
+            const btn = document.getElementById('calcBtn');
+
+            dateErr.textContent = '';
+            daysErr.textContent = '';
+            dateInput.classList.remove('error');
+            daysInput.classList.remove('error');
+            result.classList.remove('visible');
+
+            let valid = true;
+
+            if (!dateInput.value.trim()) {
+                dateErr.textContent = 'Please enter a start date.';
+                dateInput.classList.add('error');
+                valid = false;
+            }
+
+            const days = parseInt(daysInput.value, 10);
+            if (daysInput.value.trim() === '' || isNaN(days)) {
+                daysErr.textContent = 'Enter a whole number (negative allowed).';
+                daysInput.classList.add('error');
+                valid = false;
+            }
+
+            if (!valid) return;
+
+            btn.disabled = true;
+            btn.textContent = 'Calculating…';
+
+            try {
+                const res = await fetch('/api/date/add-days', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ date: dateInput.value.trim(), days })
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    const msg = data.error || 'Something went wrong.';
+                    if (msg.toLowerCase().includes('date')) {
+                        dateErr.textContent = msg; dateInput.classList.add('error');
+                    } else {
+                        daysErr.textContent = msg; daysInput.classList.add('error');
+                    }
+                    return;
+                }
+
+                document.getElementById('resultDate').textContent = data.newDate;
+                const sign = data.daysAdded < 0 ? '−' : '+';
+                const absDays = Math.abs(data.daysAdded);
+                document.getElementById('resultMeta').textContent =
+                    `${data.originalDate} ${sign} ${absDays} day${absDays !== 1 ? 's' : ''}`;
+                result.classList.add('visible');
+            } catch {
+                dateErr.textContent = 'Could not reach the server.';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Calculate New Date';
+            }
+        }
+    </script>
+</body>
+</html>
+

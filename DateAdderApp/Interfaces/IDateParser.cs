@@ -1,0 +1,1 @@
+﻿namespace DateAdderApp.Interfaces; public interface IDateParser { bool TryParse(string input, out int day, out int month, out int year); string Format(int day, int month, int year); }

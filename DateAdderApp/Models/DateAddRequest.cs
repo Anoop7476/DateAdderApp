@@ -1,0 +1,1 @@
+﻿namespace DateAdderApp.Models; public record DateAddRequest(string Date, int Days);

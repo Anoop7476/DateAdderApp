@@ -1,0 +1,1 @@
+﻿namespace DateAdderApp.Models; public record DateAddResponse(string OriginalDate, int DaysAdded, string NewDate);
