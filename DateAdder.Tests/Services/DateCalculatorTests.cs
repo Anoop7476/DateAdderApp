@@ -1,4 +1,5 @@
-﻿using DateAdderApp.Services;
+﻿using DateAdderApp.Models;
+using DateAdderApp.Services;
 using Xunit;
 
 namespace DateAdder.Tests.Services;
@@ -44,10 +45,9 @@ public class DateCalculatorTests
         int startDay, int startMonth, int startYear, int days,
         int expectedDay, int expectedMonth, int expectedYear)
     {
-        int d = startDay, m = startMonth, y = startYear;
-        _sut.AddDays(ref d, ref m, ref y, days);
-        Assert.Equal(expectedDay, d);
-        Assert.Equal(expectedMonth, m);
-        Assert.Equal(expectedYear, y);
+        var result = _sut.AddDays(new DateParts(startDay, startMonth, startYear), days);
+        Assert.Equal(expectedDay, result.Day);
+        Assert.Equal(expectedMonth, result.Month);
+        Assert.Equal(expectedYear, result.Year);
     }
 }

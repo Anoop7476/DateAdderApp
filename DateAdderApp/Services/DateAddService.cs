@@ -1,7 +1,5 @@
 ﻿using DateAdderApp.Interfaces;
 using DateAdderApp.Models;
-using DateAdderApp.Interfaces;
-using DateAdderApp.Models;
 
 namespace DateAdderApp.Services;
 
@@ -20,12 +18,12 @@ public class DateAddService : IDateAddService
     {
         _parser.TryParse(request.Date, out int day, out int month, out int year);
 
-        _calculator.AddDays(ref day, ref month, ref year, request.Days);
+        var result = _calculator.AddDays(new DateParts(day, month, year), request.Days);
 
         return new DateAddResponse(
             OriginalDate: request.Date,
             DaysAdded: request.Days,
-            NewDate: _parser.Format(day, month, year)
+            NewDate: _parser.Format(result.Day, result.Month, result.Year)
         );
     }
 }

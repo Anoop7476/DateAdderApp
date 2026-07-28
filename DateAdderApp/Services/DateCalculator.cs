@@ -1,4 +1,5 @@
 ﻿using DateAdderApp.Interfaces;
+using DateAdderApp.Models;
 
 namespace DateAdderApp.Services;
 
@@ -12,8 +13,10 @@ public class DateCalculator : IDateCalculator
     public int DaysInMonth(int month, int year) =>
         month == 2 && IsLeapYear(year) ? 29 : MonthLengths[month - 1];
 
-    public void AddDays(ref int day, ref int month, ref int year, int daysToAdd)
+    public DateParts AddDays(DateParts date, int daysToAdd)
     {
+        int day = date.Day, month = date.Month, year = date.Year;
+
         while (daysToAdd > 0)
         {
             int remaining = DaysInMonth(month, year) - day;
@@ -38,5 +41,7 @@ public class DateCalculator : IDateCalculator
             if (--month < 1) { month = 12; year--; }
             day = DaysInMonth(month, year);
         }
+
+        return new DateParts(day, month, year);
     }
 }
